@@ -118,3 +118,11 @@ async def stt_endpoint(
     except Exception as e:
         print("❌ STT ERROR:", repr(e))
         raise HTTPException(status_code=500, detail=str(e))
+if __name__ == "__main__":
+    import uvicorn
+
+    port_str = os.environ.get("PORT", "8765")
+    port = int(port_str) if port_str.isdigit() else 8765
+
+    print(f"🚀 Starting server on port {port}")
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
