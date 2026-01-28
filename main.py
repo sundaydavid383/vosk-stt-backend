@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, Header, HTTPException
 from vosk import Model, KaldiRecognizer
 import os, threading, urllib.request, zipfile, json
+from contextlib import asynccontextmanager
 import uvicorn
 
 # -------------------------------
@@ -64,15 +65,18 @@ class VoskRecognizer:
 vosk = VoskRecognizer(SAMPLE_RATE)
 
 # -------------------------------
-# FastAPI app
-app = FastAPI()
-
-@app.on_event("startup")
-def preload_vosk_model():
+# FastAPI app with lifespan
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     print("🚀 Preloading Vosk model on startup...")
-    get_model()  # loads the model immediately
+    get_model()  # preload Vosk model
     print("✅ Vosk model ready")
-    
+    yield  # continue with app startup
+
+app = FastAPI(lifespan=lifespan)
+
+# -------------------------------
+# STT endpoint
 @app.post("/stt")
 async def stt_endpoint(
     request: Request,
@@ -105,6 +109,12 @@ async def stt_endpoint(
 # -------------------------------
 # Run the server
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8765))
+    port_str = os.environ.get("PORT", "8765")
+    try:
+        port = int(port_str)
+    except ValueError:
+        print(f"⚠️ Invalid PORT value: '{port_str}', using 8765 instead")
+        port = 8765
+
     print(f"🚀 FastAPI running on 0.0.0.0:{port}")
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
