@@ -40,7 +40,7 @@ def get_model():
 # -------------------------------
 # Limit concurrent transcriptions per worker
 # Adjust this number based on your CPU cores
-transcription_semaphore = asyncio.Semaphore(4)
+transcription_semaphore = asyncio.Semaphore(1)
 
 # -------------------------------
 class VoskRecognizer:
