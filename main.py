@@ -15,7 +15,7 @@ import wave
 # Config
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_NAME = "vosk-model-small-en-us-0.15"
-MODELS_DIR = os.path.join(BASE_DIR, "models")
+MODELS_DIR = os.path.join(BASE_DIR, "model")
 VOSK_MODEL_PATH = os.path.join(MODELS_DIR, MODEL_NAME)
 SAMPLE_RATE = 16000
 MAX_BODY_SIZE = 5 * 1024 * 1024  # 5 MB max per request
